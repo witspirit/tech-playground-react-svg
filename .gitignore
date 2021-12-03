@@ -1,0 +1,5 @@
+# Exclude IntelliJ specifics
+.idea
+*.iml
+
+

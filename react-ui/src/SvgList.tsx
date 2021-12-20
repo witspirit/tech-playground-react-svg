@@ -31,10 +31,25 @@ export class SvgList extends Component<Config, SvgListState> {
 
     add = () => {
         console.debug("Add new SVG triggered...");
+        this.api.add({
+            name: "dummyName",
+            description: "dummyDescription"
+        })
+            .then(() => console.info(`Created new dummy SVG`))
+            .then(this.refresh);
     }
 
     showDetails = (id: string) => {
         console.debug(`Show details for SVG with id ${id}`);
+        this.api.get(id).then(descriptor => console.info(`Details for SVG : ${JSON.stringify(descriptor)}`))
+    }
+
+    remove = (id: string) => {
+        console.debug(`Removing SVG with id ${id}`);
+        this.api.remove(id)
+            .then(() => console.info(`Removed SVG with id ${id}`))
+            .then(this.refresh)
+        ;
     }
 
     render() {
@@ -49,8 +64,12 @@ export class SvgList extends Component<Config, SvgListState> {
             </div>
             <ul>
                 {this.state.items.map(svgDescriptor =>
-                    <li key={svgDescriptor.id} onClick={() => this.showDetails(svgDescriptor.id)}>
-                        {svgDescriptor.name} - {svgDescriptor.description}
+                    <li key={svgDescriptor.id} >
+                        <div className="SvgList-row">
+                            <div onClick={() => this.showDetails(svgDescriptor.id)}>{svgDescriptor.name} - {svgDescriptor.description}</div>
+                            <div className="SvgList-spacer"/>
+                            <Button icon="delete" onClick={() => this.remove(svgDescriptor.id)}/>
+                        </div>
                     </li>
                 )}
             </ul>

@@ -14,12 +14,16 @@ export type SvgUploadRequest = {
 }
 
 export type BackendApi = {
-    add: (addRequest: SvgUploadRequest) => void,
-    list: () => Promise<SvgDescriptor[]>
+    list: () => Promise<SvgDescriptor[]>,
+    add: (addRequest: SvgUploadRequest) => Promise<void>,
+    get: (id: string) => Promise<SvgDescriptor | undefined>,
+    remove: (id: string) => Promise<void>
 }
 
-export const api = (config: Config) : BackendApi => {
-    let items : SvgDescriptor[] = [
+// Just provide it as an alternative to select
+// eslint-disable-next-line
+const dummyApi = (config: Config): BackendApi => {
+    let items: SvgDescriptor[] = [
         {
             id: "fake1",
             name: "Fake One",
@@ -36,22 +40,81 @@ export const api = (config: Config) : BackendApi => {
         }
     ];
 
-    const list = () : Promise<SvgDescriptor[]> => {
+    const list = (): Promise<SvgDescriptor[]> => {
         return new Promise<SvgDescriptor[]>((resolve, reject) => {
             resolve(items);
         });
     };
 
-    const add = (addRequest : SvgUploadRequest) : void => {
+    const add = (addRequest: SvgUploadRequest): Promise<void> => {
         items.push({
-            id: ''+idCounter++,
+            id: '' + idCounter++,
             name: addRequest.name,
             description: addRequest.description
         });
-    }
+        return new Promise<void>((resolve, reject) => {
+            resolve()
+        });
+    };
+
+    const get = (id: string): Promise<SvgDescriptor | undefined> => {
+        return new Promise<SvgDescriptor>((resolve, reject) => {
+            let svgDescriptor = items.find((i) => i.id === id);
+            svgDescriptor ? resolve(svgDescriptor) : reject(`Could not find descriptor for ${id}`);
+        });
+    };
+
+    const remove = (id: string): Promise<void> => {
+        return new Promise<void>( (resolve, reject) => {
+            items = items.filter(item => item.id !== id)
+            resolve()
+        });
+    };
 
     return {
         list: list,
-        add: add
+        add: add,
+        get: get,
+        remove: remove
     }
 }
+
+// The real implementation - potentially unused as well, depending on our config
+// eslint-disable-next-line
+const realApi = (config: Config): BackendApi => {
+    const list = (): Promise<SvgDescriptor[]> => {
+        return fetch(`${config.backendUrl}/svgs`)
+            .then(response => response.json());
+    };
+
+    const add = (addRequest: SvgUploadRequest): Promise<void> => {
+        return fetch(`${config.backendUrl}/svgs`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(addRequest)
+        }).then(response => console.info(response.status));
+    };
+
+    const get = (id: string): Promise<SvgDescriptor | undefined> => {
+        return fetch(`${config.backendUrl}/svgs/${id}`)
+            .then(response => response.json());
+    };
+
+    const remove = (id: string): Promise<void> => {
+        return fetch(`${config.backendUrl}/svgs/${id}`, {
+            method: 'delete'
+        }).then(response => console.info(response.status));
+    };
+
+    return {
+        list: list,
+        add: add,
+        get: get,
+        remove: remove
+    }
+}
+
+
+export const api = realApi;

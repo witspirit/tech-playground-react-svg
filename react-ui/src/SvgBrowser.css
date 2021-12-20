@@ -3,19 +3,25 @@
 }
 
 .SvgBrowser-logo {
-  height: 50px;
+  height: 40px;
   pointer-events: none;
 }
 
 .SvgBrowser-header {
   background-color: aqua;
-  min-height: 50px;
+  min-height: 20px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
+  /*font-size: 20px;*/
   color: white;
+}
+
+.SvgBrowser-main {
+  width: 400px;
+  margin: 0 auto;
+  text-align: left;
 }
 
 .SvgBrowser-footer {

@@ -22,7 +22,9 @@ function SvgBrowser() {
                 <img src={svgLogo} className="SvgBrowser-logo" alt="SVG Logo" />
                 <h1>SVG Browser</h1>
             </header>
-            <SvgList backendUrl={config.backendUrl}/>
+            <div className="SvgBrowser-main">
+                <SvgList backendUrl={config.backendUrl}/>
+            </div>
             <footer className="SvgBrowser-footer">
                 <p>Tech playground for React, SVG, Spring Boot - witspirit</p>
             </footer>

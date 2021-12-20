@@ -1,0 +1,7 @@
+.SvgList-row {
+    display: flex;
+}
+
+.SvgList-spacer {
+    flex-grow: 1;
+}
